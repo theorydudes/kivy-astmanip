@@ -1,5 +1,5 @@
 import model.lines.{AutoClassNode, BlankNode, CanvasNode, ClassListNode, ClassRuleNode, CommentNode, DirectiveNode, InstructionNode, LineNode, PropertyNode, PythonNode, ResetRuleNode, StringRuleNode, WNameRuleNode, WidgetNode}
-import org.bitbucket.inkytonik.kiama.parsing.{Failure, Input, ListParsers}
+import org.bitbucket.inkytonik.kiama.parsing.{Failure, Input, ListParsers, Parsers}
 import org.bitbucket.inkytonik.kiama.util.Positions
 import sun.reflect.generics.reflectiveObjects.NotImplementedException
 
@@ -21,9 +21,9 @@ class Rules(positions:Positions) extends ListParsers(positions) {
    * [[https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html]]
    * however tabs and newlines must not be consumed.
    *
-   * @return Parser that matches regular expression `( \x0B\f\r)*`
+   * @return Parser that matches whitespace characters except `\t` and `\n`
    */
-  override def whitespace: Parser[Any] = """( \x0B\f\r)*""".r
+  override def whitespace: Parser[Any] = regex("[\\s&&[^\\t\\n]]*".r)
 
   type IndentationParser[T] = Int => Parser[T]
 
@@ -38,7 +38,7 @@ class Rules(positions:Positions) extends ListParsers(positions) {
 
   lazy val blank:Parser[LineNode] = "\n" ^^ (_ => BlankNode)
 
-  lazy val comment:Parser[CommentNode] = lexer.commenttext <~ "\n" ^^ CommentNode
+  lazy val comment:Parser[CommentNode] = commenttext <~ "\n" ^^ CommentNode
 
   lazy val directive: Parser[DirectiveNode] = "#" ~> ":" ~>  """[^\n]+""".r ^^ DirectiveNode
 
@@ -59,11 +59,11 @@ class Rules(positions:Positions) extends ListParsers(positions) {
     rep1sep(widget_name,",") ^^ ClassListNode
 
   lazy val widget_name : Parser[StringRuleNode] = (
-    lexer.wname
-    | "-" ~> lexer.wname ^^ (w => ResetRuleNode(w.name))
+    wname
+    | "-" ~> wname ^^ (w => ResetRuleNode(w.name))
   )
 
-  lazy val widget: IndentationParser[WidgetNode] = indentation => lexer.wname ~ (":".? ~> widget_tail(indentation)) ^^ {
+  lazy val widget: IndentationParser[WidgetNode] = indentation => wname ~ (":".? ~> widget_tail(indentation)) ^^ {
    case n ~ b => WidgetNode(n,b)
   }
 
@@ -79,16 +79,16 @@ class Rules(positions:Positions) extends ListParsers(positions) {
     )
 
   lazy val widget_body : IndentationParser[List[LineNode]] = indentation => {
-    rep1("\n") ~>  rep(lexer.indent(indentation+1) ~> stmt(indentation + 1))
+    rep1("\n") ~>  rep(indent(indentation+1) ~> stmt(indentation + 1))
   }
 
 
   lazy val canvas : IndentationParser[CanvasNode] = indentation => {
-    lexer.canvas ~> ":" ~> canvas_body(indentation) ^^ CanvasNode
+    canvasPre ~> ":" ~> canvas_body(indentation) ^^ CanvasNode
   }
   
   lazy val canvas_body : IndentationParser[List[LineNode]] = indentation => {
-    rep1("\n") ~> rep1(lexer.indent(indentation+1) ~> canvas_stmt(indentation+1))
+    rep1("\n") ~> rep1(indent(indentation+1) ~> canvas_stmt(indentation+1))
   }
 
   lazy val canvas_stmt:IndentationParser[LineNode] = indentation => {
@@ -96,7 +96,7 @@ class Rules(positions:Positions) extends ListParsers(positions) {
   }
 
   lazy val instruction:IndentationParser[LineNode] = indentation => {
-    lexer.wname ~ (":".? ~> instruction_tail(indentation)) ^^ InstructionNode
+    wname ~ (":".? ~> instruction_tail(indentation)) ^^ InstructionNode
   }
 
   lazy val instruction_tail:IndentationParser[List[LineNode]] = indentation => {
@@ -104,7 +104,7 @@ class Rules(positions:Positions) extends ListParsers(positions) {
   }
 
   lazy val instruction_body:IndentationParser[List[LineNode]] = indentation => {
-    rep1("\n") ~> rep(lexer.indent(indentation+1) ~> instruction_stmt(indentation+1))
+    rep1("\n") ~> rep(indent(indentation+1) ~> instruction_stmt(indentation+1))
   }
 
   lazy val instruction_stmt:IndentationParser[LineNode] = indentation => {
@@ -112,7 +112,7 @@ class Rules(positions:Positions) extends ListParsers(positions) {
   }
 
   lazy val prop:IndentationParser[PropertyNode] = indentation => {
-    lexer.name ~ (":" ~> prop_tail(indentation)) ^^ PropertyNode
+    name ~ (":" ~> prop_tail(indentation)) ^^ PropertyNode
   }
 
   lazy val prop_tail:IndentationParser[List[PythonNode]] = indentation => {
@@ -120,35 +120,33 @@ class Rules(positions:Positions) extends ListParsers(positions) {
   }
 
   lazy val prop_body:IndentationParser[List[PythonNode]] = indentation => {
-    rep1("\n") ~> rep1sep(lexer.indent(indentation+1) ~> prop_value,"\n")
+    rep1("\n") ~> rep1sep(indent(indentation+1) ~> prop_value,"\n")
   }
 
   lazy val prop_value:Parser[PythonNode] = {
     """[^\n]+""".r ^^ PythonNode
   }
+  
 
-  object lexer {
+  type Lexer = Parser[String]
 
-    type Lexer = Parser[String]
+  /**
+   * @param indentation the amount of times `\t` is concatenated
+   * @return a String containing the `indentation` amount of `\t` characters
+   */
+  private def ind (indentation:Int): String = "\t" * indentation
 
-    /**
-     * @param indentation the amount of times `\t` is concatenated
-     * @return a String containing the `indentation` amount of `\t` characters
-     */
-    private def ind (indentation:Int): String = "\t" * indentation
+  /**
+   * Indentation realized by constructing a parser that expects
+   * the `indentation` amount of `\t` characters.
+   */
+  lazy val indent: Int =>  Lexer = indentation => ind(indentation)
 
-    /**
-     * Indentation realized by constructing a parser that expects
-     * the `indentation` amount of `\t` characters.
-     */
-    lazy val indent: Int =>  Lexer = indentation => ind(indentation)
+  lazy val wname: Parser[WNameRuleNode] = """[A-Z][A-Za-z_0-9]*""".r ^^ WNameRuleNode
 
-    lazy val wname: Parser[WNameRuleNode] = """[A-Z][A-Za-z_0-9]*""".r ^^ WNameRuleNode
+  lazy val name: Lexer = """[a-z_][A-Za-z_0-9]*""".r
 
-    lazy val name: Lexer = """[a-z_][A-Za-z_0-9]*""".r
+  lazy val canvasPre : Lexer =  "canvas" | "canvas.before" | "canvas.after"
 
-    lazy val canvas : Lexer =  "canvas" | "canvas.before" | "canvas.after"
-
-    lazy val commenttext : Lexer = "#" ~> """[^\n]+""".r
-  }
+  lazy val commenttext : Lexer = "#" ~> """[^\n]+""".r
 }
