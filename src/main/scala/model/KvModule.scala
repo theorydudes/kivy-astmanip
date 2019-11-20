@@ -1,13 +1,13 @@
 package model
 
-import model.lines.{ClassRuleNode, LineNode, WidgetNode}
+import model.lines.{ClassRule, Widget}
 
-case class KvModule(root:Option[WidgetNode] = None, classes:List[ClassRuleNode] = Nil)
+case class KvModule(root:Option[Widget] = None, classes:List[ClassRule] = Nil)
 
 object KvModule {
-  def apply(lineNodes: List[LineNode]): KvModule = lineNodes.foldLeft(new KvModule()){
-    case (kvModule,w:WidgetNode)=> kvModule.copy(root = Some(w))
-    case (kvModule,c:ClassRuleNode) => kvModule.copy(classes = kvModule.classes ++ (c :: Nil))
+  def apply(lineNodes: List[ASTNode]): KvModule = lineNodes.foldLeft(new KvModule()){
+    case (kvModule,w:Widget)=> kvModule.copy(root = Some(w))
+    case (kvModule,c:ClassRule) => kvModule.copy(classes = kvModule.classes ++ (c :: Nil))
     case (kvModule,_) => kvModule
   }
 }

@@ -1,22 +1,21 @@
 package model
 
 object lines {
-  trait LineNode extends ASTNode
-  case class DirectiveNode(directive:String) extends LineNode
-  case class WidgetNode(name:WNameRuleNode,widgetBody:List[LineNode]) extends LineNode
-  case class CanvasNode(canvasBody:List[LineNode]) extends LineNode
-  case class InstructionNode(name:WNameRuleNode,instructionBody:List[LineNode]) extends LineNode
-  case class PropertyNode(name:String,propertyBody:List[PythonNode]) extends LineNode
-  case class CommentNode(comment:String) extends LineNode
-  case object BlankNode extends LineNode
-  case class ClassRuleNode(classWidget:AutoClassNode,widgetBody:List[LineNode]) extends LineNode
-  case class ClassListNode(names:List[StringRuleNode]) extends LineNode
-  case class AutoClassNode(widgetList:ClassListNode,widgetBase:Option[ClassListNode]) extends LineNode
-  case class TemplateRuleNode(classWidget:AutoClassNode,widgetBody:List[LineNode]) extends LineNode
+  case class Directive(directive:String) extends ASTNode
+  case class Widget(name:WName, widgetBody:List[ASTNode]) extends ASTNode
+  case class Canvas(canvasBody:List[ASTNode]) extends ASTNode
+  case class Instruction(name:WName, instructionBody:List[ASTNode]) extends ASTNode
+  case class Property(name:String, propertyBody:List[Python]) extends ASTNode
+  case class Comment(comment:String) extends ASTNode
+  case object Blank extends ASTNode
+  case class ClassRule(classWidget:AutoClass, widgetBody:List[ASTNode]) extends ASTNode
+  case class ClassList(names:List[KivyString]) extends ASTNode
+  case class AutoClass(widgetList:ClassList, widgetBase:Option[ClassList]) extends ASTNode
+  case class Template(classWidget:AutoClass, widgetBody:List[ASTNode]) extends ASTNode
 
-  sealed trait StringRuleNode extends LineNode
-  case class WNameRuleNode(name:String) extends StringRuleNode
-  case class ResetRuleNode(name:String) extends StringRuleNode
+  sealed trait KivyString extends ASTNode
+  case class WName(name:String) extends KivyString
+  case class Reset(name:String) extends KivyString
 
-  case class PythonNode(pCode:String) extends LineNode
+  case class Python(pCode:String) extends ASTNode
 }
