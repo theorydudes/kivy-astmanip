@@ -1,10 +1,9 @@
 import model.KvModule
-import model.lines.{AutoClassNode, BlankNode, CanvasNode, ClassListNode, ClassRuleNode, CommentNode, DirectiveNode, InstructionNode, LineNode, PropertyNode, PythonNode, ResetRuleNode, StringRuleNode, WNameRuleNode, WidgetNode}
-import org.bitbucket.inkytonik.kiama.parsing.{Failure, Input, ListParsers, Parsers}
+import model.lines.{AutoClassNode, BlankNode, CanvasNode, ClassListNode, ClassRuleNode,
+  CommentNode, DirectiveNode, InstructionNode, LineNode, PropertyNode, PythonNode,
+  ResetRuleNode, StringRuleNode, TemplateRuleNode, WNameRuleNode, WidgetNode}
+import org.bitbucket.inkytonik.kiama.parsing.ListParsers
 import org.bitbucket.inkytonik.kiama.util.Positions
-import sun.reflect.generics.reflectiveObjects.NotImplementedException
-
-import scala.util.matching.Regex
 
 //TODO: Auf linksfaktorisierung prüfen
 class Rules(positions:Positions) extends ListParsers(positions) {
@@ -20,7 +19,7 @@ class Rules(positions:Positions) extends ListParsers(positions) {
 
   type IndentationParser[T] = Int => Parser[T]
 
-  lazy val kv : Parser[KvModule] = (rep1(line | blank ^^ (_ => BlankNode))) ^^ {
+  lazy val kv : Parser[KvModule] = rep1(line | blank ^^ (_ => BlankNode)) ^^ {
     l => KvModule(l)
   }
 
@@ -29,6 +28,7 @@ class Rules(positions:Positions) extends ListParsers(positions) {
     | root_rule
     | class_rule
     | comment
+    | template_rule
   )
 
   lazy val blank:Parser[LineNode] = "\n" ^^ (_ => BlankNode)
@@ -39,7 +39,13 @@ class Rules(positions:Positions) extends ListParsers(positions) {
 
   lazy val root_rule: Parser[WidgetNode] = widget(0)
 
-  lazy val class_rule: Parser[ClassRuleNode] = "<" ~> (widget_comp <~ ">") ~ (":".? ~> class_rule_tail) ^^ ClassRuleNode
+  lazy val class_rule: Parser[ClassRuleNode] =
+    "<" ~> (widget_comp <~ ">") ~ (":".? ~> class_rule_tail) ^^ ClassRuleNode
+
+  lazy val template_rule: Parser[TemplateRuleNode] =
+    "[" ~> class_widget ~ ("]" ~> ":".? ~> widget_body(0)) ^^ TemplateRuleNode
+
+  lazy val class_widget : Parser[AutoClassNode] = widget_comp
 
   lazy val class_rule_tail:Parser[List[LineNode]] =
     widget_body(0)
@@ -58,7 +64,8 @@ class Rules(positions:Positions) extends ListParsers(positions) {
     | "-" ~> wname ^^ (w => ResetRuleNode(w.name))
   )
 
-  lazy val widget: IndentationParser[WidgetNode] = indentation => wname ~ (":".? ~> widget_tail(indentation)) ^^ {
+  lazy val widget: IndentationParser[WidgetNode] = indentation =>
+    wname ~ (":".? ~> widget_tail(indentation)) ^^ {
    case n ~ b => WidgetNode(n,b)
   }
 

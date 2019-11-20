@@ -12,6 +12,7 @@ object lines {
   case class ClassRuleNode(classWidget:AutoClassNode,widgetBody:List[LineNode]) extends LineNode
   case class ClassListNode(names:List[StringRuleNode]) extends LineNode
   case class AutoClassNode(widgetList:ClassListNode,widgetBase:Option[ClassListNode]) extends LineNode
+  case class TemplateRuleNode(classWidget:AutoClassNode,widgetBody:List[LineNode]) extends LineNode
 
   sealed trait StringRuleNode extends LineNode
   case class WNameRuleNode(name:String) extends StringRuleNode
