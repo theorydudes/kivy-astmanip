@@ -1,3 +1,4 @@
+import model.KvModule
 import model.lines.{AutoClassNode, BlankNode, CanvasNode, ClassListNode, ClassRuleNode, CommentNode, DirectiveNode, InstructionNode, LineNode, PropertyNode, PythonNode, ResetRuleNode, StringRuleNode, WNameRuleNode, WidgetNode}
 import org.bitbucket.inkytonik.kiama.parsing.{Failure, Input, ListParsers, Parsers}
 import org.bitbucket.inkytonik.kiama.util.Positions
@@ -5,15 +6,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException
 
 import scala.util.matching.Regex
 
-//TODO: Constraint: Nur spaces außerhalb von Indentation. Eventuell manuell vorher ersetzen
-/*TODO: Indentation ist doch wichtig, da man sonst folgendes zum Beispiel nicht unterscheiden kann:
-        CanvasInstruction1:
-            canvasprop1: value1
-        CanvasInstruction2:
-            canvasprop2: value2
- */
 //TODO: Auf linksfaktorisierung prüfen
-//TODO: Blanks hinzufügen, macht allerdings linksfaktorisierung kaputt, aufpassen!
 class Rules(positions:Positions) extends ListParsers(positions) {
 
   /**
@@ -27,7 +20,9 @@ class Rules(positions:Positions) extends ListParsers(positions) {
 
   type IndentationParser[T] = Int => Parser[T]
 
-  lazy val kv : Parser[List[LineNode]] = rep1(line | blank ^^ (_ => BlankNode))
+  lazy val kv : Parser[KvModule] = (rep1(line | blank ^^ (_ => BlankNode))) ^^ {
+    l => KvModule(l)
+  }
 
   lazy val line :Parser[LineNode] = (
     directive
