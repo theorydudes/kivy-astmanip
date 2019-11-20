@@ -49,6 +49,9 @@ object PreProcessor {
     }
 
     val lines = pre.split("\n")
-    new PreProcessor(tabAndConcat(squash(lines.toList).split("\n").toList))
+    val linesList = lines.toList
+    val squashed = squash(linesList).split("\n")
+    val operatingSystemIndependentNewlines = squashed.map(s => s.replaceAll("\\r\\n","\n"))
+    new PreProcessor(tabAndConcat(operatingSystemIndependentNewlines.toList))
   }
 }
