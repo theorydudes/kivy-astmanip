@@ -1,6 +1,5 @@
 import model.{ASTNode, KvModule}
-import model.lines.{AutoClass, Canvas, ClassList, ClassRule, Comment, Directive, Instruction,
-  KivyString, Property, Python, Reset, Template, WName, Widget}
+import model.lines.{AutoClass, Canvas, CanvasBody, CanvasBodyElement, ClassList, ClassRule, Comment, Directive, Instruction, InstructionBody, InstructionBodyElement, KivyString, Property, Python, Reset, Template, WName, Widget, WidgetBody, WidgetBodyElement}
 import org.bitbucket.inkytonik.kiama.parsing.ListParsers
 import org.bitbucket.inkytonik.kiama.util.Positions
 
@@ -37,7 +36,7 @@ class Rules(positions:Positions) extends ListParsers(positions) {
   lazy val root_rule: Parser[Widget] = widget(0)
 
   lazy val class_rule: Parser[ClassRule] =
-    "<" ~> (widget_comp <~ ">") ~ (":".? ~> class_rule_tail) ^^ ClassRule
+    "<" ~> (class_widget <~ ">") ~ (":".? ~> class_rule_tail) ^^ ClassRule
 
   lazy val template_rule: Parser[Template] =
     "[" ~> class_widget ~ ("]" ~> ":".? ~> widget_body(0)) ^^ Template
@@ -66,18 +65,18 @@ class Rules(positions:Positions) extends ListParsers(positions) {
    case n ~ b => Widget(n,b)
   }
 
-  lazy val widget_tail: IndentationParser[List[ASTNode]] = indentation => {
+  lazy val widget_tail: IndentationParser[WidgetBody] = indentation => {
     widget_body(indentation)
   }
 
-  lazy val stmt: IndentationParser[ASTNode] = indentation => (
+  lazy val stmt: IndentationParser[WidgetBodyElement] = indentation => (
     widget(indentation)
     | canvas(indentation)
     | prop(indentation)
     | comment
     )
 
-  lazy val widget_body : IndentationParser[List[ASTNode]] = indentation => {
+  lazy val widget_body : IndentationParser[WidgetBody] = indentation => {
     rep1("\n") ~>  rep(indent(indentation+1) ~> stmt(indentation + 1))
   }
 
@@ -86,27 +85,27 @@ class Rules(positions:Positions) extends ListParsers(positions) {
     canvasPre ~> ":" ~> canvas_body(indentation) ^^ Canvas
   }
   
-  lazy val canvas_body : IndentationParser[List[ASTNode]] = indentation => {
+  lazy val canvas_body : IndentationParser[CanvasBody] = indentation => {
     rep1("\n") ~> rep1(indent(indentation+1) ~> canvas_stmt(indentation+1))
   }
 
-  lazy val canvas_stmt:IndentationParser[ASTNode] = indentation => {
+  lazy val canvas_stmt:IndentationParser[CanvasBodyElement] = indentation => {
     instruction(indentation) | comment
   }
 
-  lazy val instruction:IndentationParser[ASTNode] = indentation => {
+  lazy val instruction:IndentationParser[Instruction] = indentation => {
     wname ~ (":".? ~> instruction_tail(indentation)) ^^ Instruction
   }
 
-  lazy val instruction_tail:IndentationParser[List[ASTNode]] = indentation => {
+  lazy val instruction_tail:IndentationParser[InstructionBody] = indentation => {
      instruction_body(indentation)
   }
 
-  lazy val instruction_body:IndentationParser[List[ASTNode]] = indentation => {
+  lazy val instruction_body:IndentationParser[InstructionBody] = indentation => {
     rep1("\n") ~> rep(indent(indentation+1) ~> instruction_stmt(indentation+1))
   }
 
-  lazy val instruction_stmt:IndentationParser[ASTNode] = indentation => {
+  lazy val instruction_stmt:IndentationParser[InstructionBodyElement] = indentation => {
     prop(indentation) | comment
   }
 
