@@ -5,5 +5,5 @@ import util.PreProcessor
 
 object Main extends App {
   val ret = KivyParser(path = "src/main/scala/testWindows.kv").parse
-  println(ret.toMessage)
+  println(ret)
 }
