@@ -1,6 +1,6 @@
 package util
 
-import model.lines.Widget
+import model.nodes.Widget
 import model.{ASTNode, KvModule}
 import org.bitbucket.inkytonik.kiama.output.PrettyPrinter
 

@@ -1,6 +1,6 @@
 package model
 
-object lines {
+object nodes {
   trait WidgetBodyElement extends ASTNode
   trait InstructionBodyElement extends ASTNode
   trait CanvasBodyElement extends ASTNode

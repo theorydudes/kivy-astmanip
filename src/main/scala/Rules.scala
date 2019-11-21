@@ -1,5 +1,5 @@
 import model.{ASTNode, KvModule}
-import model.lines.{AutoClass, Canvas, CanvasBody, CanvasBodyElement, ClassList, ClassRule, Comment, Directive, Instruction, InstructionBody, InstructionBodyElement, KivyString, Property, Python, Reset, Template, WName, Widget, WidgetBody, WidgetBodyElement}
+import model.nodes.{AutoClass, Canvas, CanvasBody, CanvasBodyElement, ClassList, ClassRule, Comment, Directive, Instruction, InstructionBody, InstructionBodyElement, KivyString, Property, Python, Reset, Template, WName, Widget, WidgetBody, WidgetBodyElement}
 import org.bitbucket.inkytonik.kiama.parsing.ListParsers
 import org.bitbucket.inkytonik.kiama.util.Positions
 

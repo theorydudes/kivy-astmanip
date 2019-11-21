@@ -1,6 +1,6 @@
 package model
 
-import model.lines.{ClassRule, Widget}
+import model.nodes.{ClassRule, Widget}
 
 case class KvModule(root:Option[Widget] = None, classes:List[ClassRule] = Nil,rawNodes:List[ASTNode] = Nil)
 
