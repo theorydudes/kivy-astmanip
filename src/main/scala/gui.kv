@@ -1,3 +1,10 @@
+#canvas.before:
+#    Color:
+#        rgba: .5, .5, .5, 1
+#    Line:
+#        width: 2
+#        rectangle: self.x, self.y, self.width, self.height
+
 <CustomLabel@Label>
 	font_size: 28
 
@@ -329,7 +336,7 @@
 									CustomLabel:
 										text: "Temperature Value [in °C]"
 										size_hint_x: None
-										width: 500
+										width : 500
 
 								AnchorLayout:
 									anchor_x: 'right'
@@ -364,6 +371,7 @@
 										value: root.hw_manager.dummy_sensor_temperature.value
 										name: "first_floor_center_screen"
 										current: manager.current
+
 
 					TabbedPanelItem:
 						id: floor1_center_humidity_tab
@@ -1046,7 +1054,3 @@
 						text: "2nd tab"
 						CustomLabel:
 							text: "2nd tab"
-
-[Autoblabla@Base1]
-
-

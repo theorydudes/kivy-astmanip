@@ -1,5 +1,7 @@
-import model.{ASTNode, KvModule}
-import model.lines.{AutoClass, Canvas, CanvasBody, CanvasBodyElement, ClassList, ClassRule, Comment, Directive, Instruction, InstructionBody, InstructionBodyElement, KivyString, Property, Python, Reset, Template, WName, Widget, WidgetBody, WidgetBodyElement}
+package util
+
+import model.lines._
+import model.ASTNode
 import org.bitbucket.inkytonik.kiama.parsing.ListParsers
 import org.bitbucket.inkytonik.kiama.util.Positions
 
@@ -17,11 +19,9 @@ class Rules(positions:Positions) extends ListParsers(positions) {
 
   type IndentationParser[T] = Int => Parser[T]
 
-  lazy val kv : Parser[KvModule] = rep1(line ) ^^ {
-    l => KvModule(l)
-  }
+  lazy val kv : Parser[TopLevel] = rep1(line) ^^ TopLevel
 
-  lazy val line :Parser[ASTNode] = (
+  lazy val line :Parser[RootNodeElement] = (
     directive
     | root_rule
     | class_rule
@@ -33,7 +33,7 @@ class Rules(positions:Positions) extends ListParsers(positions) {
 
   lazy val directive: Parser[Directive] = "#" ~> ":" ~>  """[^\n]+""".r ^^ Directive
 
-  lazy val root_rule: Parser[Widget] = widget(0)
+  lazy val root_rule: Parser[Root] = widget(0) ^^ Root
 
   lazy val class_rule: Parser[ClassRule] =
     "<" ~> (class_widget <~ ">") ~ (":".? ~> class_rule_tail) ^^ ClassRule
@@ -49,8 +49,8 @@ class Rules(positions:Positions) extends ListParsers(positions) {
   lazy val widget_comp: Parser[AutoClass] =
     widget_list ~ ("@" ~> widget_base).? ^^ AutoClass
 
-  lazy val widget_base : Parser[ClassList] =
-    rep1sep(widget_name,"+") ^^ ClassList
+  lazy val widget_base : Parser[ClassListBase] =
+    rep1sep(widget_name,"+") ^^ ClassListBase
 
   lazy val widget_list:Parser[ClassList] =
     rep1sep(widget_name,",") ^^ ClassList
@@ -82,7 +82,7 @@ class Rules(positions:Positions) extends ListParsers(positions) {
 
 
   lazy val canvas : IndentationParser[Canvas] = indentation => {
-    canvasPre ~> ":" ~> canvas_body(indentation) ^^ Canvas
+    canvasPre ~ (":" ~> canvas_body(indentation)) ^^ Canvas
   }
   
   lazy val canvas_body : IndentationParser[CanvasBody] = indentation => {
@@ -144,7 +144,10 @@ class Rules(positions:Positions) extends ListParsers(positions) {
 
   lazy val name: Lexer = """[a-z_][A-Za-z_0-9]*""".r
 
-  lazy val canvasPre : Lexer =  "canvas" | "canvas.before" | "canvas.after"
+  lazy val canvasPre : Parser[CanvasType.canvasType] =
+    "canvas" ^^ (_ => CanvasType.Regular)|
+      "canvas.before" ^^ (_ => CanvasType.Before) |
+      "canvas.after" ^^ (_ => CanvasType.After)
 
   lazy val commenttext : Lexer = "#" ~> """[^\n]+""".r
 }

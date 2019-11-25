@@ -1,9 +1,13 @@
-import org.bitbucket.inkytonik.kiama.parsing.{NoSuccess, Parsers, Success}
-import org.bitbucket.inkytonik.kiama.util.{FileSource, Positions, StringSource}
-import util.PreProcessor
+import util.KivyParser.{File, Path}
+import util.KivyParser
 
 
 object Main extends App {
-  val ret = KivyParser(path = "src/main/scala/testWindows.kv").parse
-  println(ret)
+  val ret = KivyParser(Path("src/main/scala/gui.kv")).parse
+  if(ret.isSuccess) {
+    println(ret)
+    println(ret.pretty)
+  } else {
+    println()
+  }
 }
