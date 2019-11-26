@@ -32,8 +32,8 @@ trait FoldableAST {
   def reduceLeftOption(f:(ASTNode,ASTNode) => ASTNode):Option[ASTNode] =
     reduceLeftToOption(identity)(f)
 
-  def reduceRightOption(f:(ASTNode,ASTNode) => ASTNode):Option[ASTNode] =
-    reduceRightToOption(identity)(f)
+  /*def reduceRightOption(f:(ASTNode,ASTNode) => ASTNode):Option[ASTNode] =
+    reduceRightToOption(identity)(f)*/
 
   def get(index:Long) =
     foldLeft((Option.empty[ASTNode],0)){

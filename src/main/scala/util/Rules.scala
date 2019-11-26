@@ -5,9 +5,7 @@ import model.ASTNode
 import org.bitbucket.inkytonik.kiama.parsing.ListParsers
 import org.bitbucket.inkytonik.kiama.util.Positions
 
-//TODO: Auf linksfaktorisierung prüfen
 class Rules(positions:Positions) extends ListParsers(positions) {
-
   /**
    * Match usual whitespace characters associated with `\s` token described at
    * [[https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html]]
@@ -122,7 +120,7 @@ class Rules(positions:Positions) extends ListParsers(positions) {
   }
 
   lazy val prop_value:Parser[Python] = {
-    """[^\n]+""".r ^^ Python
+    """[^\n]+""".r ^^ (s => Python(s))
   }
   
 
