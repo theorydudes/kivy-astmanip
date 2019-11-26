@@ -1,6 +1,8 @@
 package model
 
-import cats.Foldable
-import util.KivyPrettyPrinter._
+import org.bitbucket.inkytonik.kiama.rewriting.Rewriter._
+import org.bitbucket.inkytonik.kiama.rewriting.Strategy
 
-trait ASTNode
+trait ASTNode extends FoldableAST{
+
+}
