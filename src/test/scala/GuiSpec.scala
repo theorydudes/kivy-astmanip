@@ -18,7 +18,6 @@ class GuiSpec extends FlatSpec {
     val first = ret.get.collectFirst{
       case p@lines.Python(pCode) if pCode equals "['Grey','000']" => p
     }
-    println(first)
     assert(first.isDefined)
     assert(first.get.pCode equals "['Grey','000']")
   }
