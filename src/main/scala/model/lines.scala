@@ -1,12 +1,22 @@
 package model
 
 import com.github.python3parser.model.mods.ExpressionMod
+import org.bitbucket.inkytonik.kiama.rewriting.Strategy
+import org.bitbucket.inkytonik.{kiama => Kiama}
 
 object lines {
-  trait WidgetBodyElement extends ASTNode
-  trait InstructionBodyElement extends ASTNode
-  trait CanvasBodyElement extends ASTNode
-  trait RootNodeElement extends ASTNode
+  trait WidgetBodyElement extends ASTNode {
+    override def traverseAndApply(s: Strategy): WidgetBodyElement
+  }
+  trait InstructionBodyElement extends ASTNode {
+    override def traverseAndApply(s: Strategy): InstructionBodyElement
+  }
+  trait CanvasBodyElement extends ASTNode {
+    override def traverseAndApply(s: Strategy): CanvasBodyElement
+  }
+  trait RootNodeElement extends ASTNode {
+    override def traverseAndApply(s: Strategy): RootNodeElement
+  }
 
   object CanvasType {
     trait canvasType
@@ -35,9 +45,14 @@ object lines {
   case class TopLevel(rootLevelNodes: RootLevelNodes)
     extends ASTNode { self =>
 
-    override def foldLeft[B](z: B)(op: (B, ASTNode) => B): B = {
+    override def foldLeft[B](z: B)(op: (B, ASTNode) => B): B =
       op(foldList(rootLevelNodes)(z)(op),self)
-    }
+
+    override def traverseAndApply(s: Strategy): TopLevel =
+      Kiama
+        .rewriting
+        .Rewriter
+        .rewrite(s)(TopLevel(rootLevelNodes.map(_.traverseAndApply(s))))
   }
 
   case class Directive(directive:String)
@@ -46,6 +61,12 @@ object lines {
     override def toString: String = s"#:$directive"
 
     override def foldLeft[B](z: B)(op: (B, ASTNode) => B): B = op(z,self)
+
+    override def traverseAndApply(s: Strategy): RootNodeElement =
+      Kiama
+      .rewriting
+      .Rewriter
+      .rewrite(s)(self)
   }
 
   case class Root(widget:Widget)
@@ -54,6 +75,12 @@ object lines {
     override def foldLeft[B](z: B)(op: (B, ASTNode) => B): B = {
       op(widget.foldLeft(z)(op),self)
     }
+
+    override def traverseAndApply(s: Strategy): RootNodeElement =
+      Kiama
+      .rewriting
+      .Rewriter
+      .rewrite(s)(Root(widget.traverseAndApply(s).asInstanceOf[Widget]))
   }
   case class Widget(name:WName, widgetBody:WidgetBody)
     extends WidgetBodyElement { self =>
@@ -63,6 +90,12 @@ object lines {
       val foldedBody =  foldList(widgetBody)(foldedName)(op)
       op(foldedBody,self)
     }
+
+    override def traverseAndApply(s: Strategy): WidgetBodyElement =
+      Kiama
+      .rewriting
+      .Rewriter
+      .rewrite(s)(Widget(name.traverseAndApply(s).asInstanceOf[WName],widgetBody.map(_.traverseAndApply(s))))
   }
   case class Canvas(canvasType: CanvasType.canvasType,canvasBody:CanvasBody)
     extends WidgetBodyElement { self =>
@@ -71,6 +104,12 @@ object lines {
       val foldedBody = foldList(canvasBody)(z)(op)
       op(foldedBody,self)
     }
+
+    override def traverseAndApply(s: Strategy): WidgetBodyElement =
+      Kiama
+      .rewriting
+      .Rewriter
+      .rewrite(s)(Canvas(canvasType,canvasBody.map(_.traverseAndApply(s))))
   }
 
   case class Instruction(name:WName, instructionBody:InstructionBody)
@@ -78,6 +117,12 @@ object lines {
 
     override def foldLeft[B](z: B)(op: (B, ASTNode) => B): B =
       op(foldList(instructionBody)(name.foldLeft(z)(op))(op),self)
+
+    override def traverseAndApply(s: Strategy): CanvasBodyElement =
+      Kiama
+      .rewriting
+      .Rewriter
+      .rewrite(s)(Instruction(name.traverseAndApply(s).asInstanceOf[WName],instructionBody.map(_.traverseAndApply(s))))
   }
 
   case class Property(name:String, propertyBody:List[Python])
@@ -85,6 +130,12 @@ object lines {
 
     override def foldLeft[B](z: B)(op: (B, ASTNode) => B): B =
       op(foldList(propertyBody)(z)(op),self)
+
+    override def traverseAndApply(s: Strategy): Property =
+      Kiama
+      .rewriting
+      .Rewriter
+      .rewrite(s)(Property(name,propertyBody.map(_.traverseAndApply(s))))
   }
 
   case class Comment(comment:String)
@@ -94,6 +145,12 @@ object lines {
 
     override def foldLeft[B](z: B)(op: (B, ASTNode) => B): B =
       op(z,self)
+
+    override def traverseAndApply(s: Strategy): Comment =
+      Kiama
+      .rewriting
+      .Rewriter
+      .rewrite(s)(self)
   }
 
   case class ClassRule(classWidget:AutoClass, widgetBody:List[ASTNode])
@@ -101,6 +158,12 @@ object lines {
 
     override def foldLeft[B](z: B)(op: (B, ASTNode) => B): B =
       op(foldList(widgetBody)(classWidget.foldLeft(z)(op))(op),self)
+
+    override def traverseAndApply(s: Strategy): RootNodeElement =
+      Kiama
+      .rewriting
+      .Rewriter
+      .rewrite(s)(ClassRule(classWidget.traverseAndApply(s),widgetBody.map(_.traverseAndApply(s))))
   }
 
   case class ClassList(names:List[KivyString])
@@ -108,6 +171,12 @@ object lines {
 
     override def foldLeft[B](z: B)(op: (B, ASTNode) => B): B =
       op(foldList(names)(z)(op),self)
+
+    override def traverseAndApply(s: Strategy): ClassList =
+      Kiama
+      .rewriting
+      .Rewriter
+      .rewrite(s)(ClassList(names.map(_.traverseAndApply(s))))
   }
 
   case class ClassListBase(names:List[KivyString])
@@ -115,6 +184,12 @@ object lines {
 
     override def foldLeft[B](z: B)(op: (B, ASTNode) => B): B =
       op(foldList(names)(z)(op),self)
+
+    override def traverseAndApply(s: Strategy): ClassListBase =
+      Kiama
+      .rewriting
+      .Rewriter
+      .rewrite(s)(ClassListBase(names.map(_.traverseAndApply(s))))
   }
 
   case class AutoClass(widgetList:ClassList, widgetBase:Option[ClassListBase])
@@ -122,6 +197,13 @@ object lines {
 
     override def foldLeft[B](z: B)(op: (B, ASTNode) => B): B =
       op(foldOption(widgetBase)(widgetList.foldLeft(z)(op))(op),self)
+
+    override def traverseAndApply(s: Strategy): AutoClass =
+      Kiama
+      .rewriting
+      .Rewriter
+      .rewrite(s)(AutoClass(widgetList.traverseAndApply(s),widgetBase.map(_.traverseAndApply(s))))
+
   }
 
   case class Template(classWidget:AutoClass, widgetBody:List[ASTNode])
@@ -129,9 +211,17 @@ object lines {
 
     override def foldLeft[B](z: B)(op: (B, ASTNode) => B): B =
       op(foldList(widgetBody)(classWidget.foldLeft(z)(op))(op),self)
+
+    override def traverseAndApply(s: Strategy): RootNodeElement =
+      Kiama
+      .rewriting
+      .Rewriter
+      .rewrite(s)(Template(classWidget.traverseAndApply(s),widgetBody.map(_.traverseAndApply(s))))
   }
 
-  sealed trait KivyString extends ASTNode
+  sealed trait KivyString extends ASTNode {
+    override def traverseAndApply(s: Strategy): KivyString
+  }
 
   case class WName(name:String)
     extends KivyString { self =>
@@ -139,6 +229,12 @@ object lines {
 
     override def foldLeft[B](z: B)(op: (B, ASTNode) => B): B =
       op(z,self)
+
+    override def traverseAndApply(s: Strategy): KivyString =
+      Kiama
+      .rewriting
+      .Rewriter
+      .rewrite(s)(self)
   }
 
   case class Reset(name:String)
@@ -148,6 +244,12 @@ object lines {
 
     override def foldLeft[B](z: B)(op: (B, ASTNode) => B): B =
       op(z,self)
+
+    override def traverseAndApply(s: Strategy): KivyString =
+      Kiama
+      .rewriting
+      .Rewriter
+      .rewrite(s)(self)
   }
 
   case class Python(pCode:String)
@@ -168,7 +270,11 @@ object lines {
     override def foldLeft[B](z: B)(op: (B, ASTNode) => B): B =
       op(z,self)
 
-    
+    override def traverseAndApply(s: Strategy): Python =
+      Kiama
+      .rewriting
+      .Rewriter
+      .rewrite(s)(self)
   }
 
   object Python {
