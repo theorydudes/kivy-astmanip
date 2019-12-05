@@ -1,4 +1,4 @@
-package util
+package com.github.theorydudes.util
 
 import org.bitbucket.inkytonik.kiama.util.StringSource
 
@@ -9,16 +9,16 @@ case class PreProcessor(post:String){
 object PreProcessor {
   def apply(pre: String): PreProcessor = {
     /**
-     * Replace all occurences of 4 spaces at the beginning of a line with `\t` and concatenate
+     * Replace all occurrences of 4 spaces at the beginning of a line with `\t` and concatenate
      * lines with the `\n` character.
      *
-     * @param lines
-     * @return
+     * @param lines raw lines possibly containing a mixture of `\t` and spaces for indentation.
+     * @return kivy-code that only contains `\t`-characters for indentation.
      */
     def tabAndConcat(lines:List[String]): String = lines match {
       case Nil => ""
       case head :: tl =>
-        val indexOfFirstNonWhitespace = head.indexWhere(c => """[^\s]""".r.pattern.matcher(c.toString()).matches())
+        val indexOfFirstNonWhitespace = head.indexWhere(c => """[^\s]""".r.pattern.matcher(c.toString).matches())
         if(indexOfFirstNonWhitespace != -1) {
           val substitutedWhitespaces = head.substring(0, indexOfFirstNonWhitespace).replaceAll(" {4}", "\t")
           val withoutIndentation = head.substring(indexOfFirstNonWhitespace)
@@ -32,8 +32,8 @@ object PreProcessor {
     /**
      * eliminates all whitespaces-only lines except for the last `\n` line.
      *
-     * @param lines
-     * @return
+     * @param lines list of lines of kivy-code possibly containing empty lines
+     * @return kivy-code that does not contain any empty lines.
      */
     def squash(lines:List[String]): String = lines match {
       case Nil => ""

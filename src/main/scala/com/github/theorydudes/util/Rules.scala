@@ -1,14 +1,14 @@
-package util
+package com.github.theorydudes.util
 
-import model.lines._
-import model.ASTNode
+import com.github.theorydudes.model.lines._
+import com.github.theorydudes.model.ASTNode
 import org.bitbucket.inkytonik.kiama.parsing.ListParsers
 import org.bitbucket.inkytonik.kiama.util.Positions
 
 class Rules(positions:Positions) extends ListParsers(positions) {
   /**
    * Match usual whitespace characters associated with `\s` token described at
-   * [[https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html]]
+   * [[https://docs.oracle.com/javase/7/docs/api/java/com.github.theorydudes.util/regex/Pattern.html]]
    * however tabs and newlines must not be consumed.
    *
    * @return Parser that matches whitespace characters except `\t` and `\n`

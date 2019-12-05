@@ -1,4 +1,4 @@
-package model
+package com.github.theorydudes.model
 
 import com.github.python3parser.model.mods.ExpressionMod
 import org.bitbucket.inkytonik.kiama.rewriting.Strategy
@@ -255,15 +255,13 @@ object lines {
   case class Python(pCode:String)
     extends ASTNode { self =>
 
-    //TODO: This does not evaluat because parseExpressionMod expects a path -> wait for framework to offer according
-    //      function
     lazy val pythonAST: ExpressionMod =
       com
       .github
       .python3parser
       .utilities
       .ASTParser
-      .parseExpressionMod(pCode)
+      .parseExpressionModWithCode(pCode)
 
     override def toString: String = pCode
 

@@ -1,4 +1,4 @@
-package model
+package com.github.theorydudes.model
 
 import org.bitbucket.inkytonik.kiama.==>
 import org.bitbucket.inkytonik.kiama.rewriting.Rewriter._

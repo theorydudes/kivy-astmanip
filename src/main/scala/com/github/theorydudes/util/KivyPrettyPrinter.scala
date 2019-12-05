@@ -1,8 +1,8 @@
-package util
+package com.github.theorydudes.util
 
-import model.lines.Widget
-import model.ASTNode
-import model.lines._
+import com.github.theorydudes.model.lines.Widget
+import com.github.theorydudes.model.ASTNode
+import com.github.theorydudes.model.lines._
 import org.bitbucket.inkytonik.kiama.output.PrettyPrinter
 import org.bitbucket.inkytonik.kiama.output.PrettyPrinterTypes.Document
 

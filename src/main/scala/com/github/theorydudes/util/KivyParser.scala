@@ -1,14 +1,14 @@
-package util
+package com.github.theorydudes.util
 
-import model.ASTNode
-import model.lines.{Canvas, ClassRule, Comment, Directive, Instruction, Property, Root, RootLevelNodes, Template, TopLevel, Widget}
+import com.github.theorydudes.model.ASTNode
+import com.github.theorydudes.model.lines.{Canvas, ClassRule, Comment, Directive, Instruction, Property, Root, Template, TopLevel, Widget}
 import org.bitbucket.inkytonik.kiama.parsing
 import org.bitbucket.inkytonik.kiama.parsing.{NoSuccess, ParseResult}
 import org.bitbucket.inkytonik.kiama.util.{FileSource, Positions, Source, StringSource}
 
 case class KivyParser(source:Source) {
 
-  case class KivyParserResult[T <: ASTNode ](parseResult: ParseResult[T]){
+  case class KivyParserResult[T <: ASTNode](parseResult: ParseResult[T]){
     def isSuccess: Boolean = parseResult match {
       case parsing.Success(_,_) => true
       case _ => false
@@ -20,8 +20,8 @@ case class KivyParser(source:Source) {
     }
 
     def get: T = parseResult match {
-      case parsing.Success(result, next) => result
-      case success: NoSuccess =>throw new IllegalStateException("No parsing result.")
+      case parsing.Success(result, _) => result
+      case _: NoSuccess =>throw new IllegalStateException("No parsing result.")
     }
 
     def pretty:String = parseResult match {

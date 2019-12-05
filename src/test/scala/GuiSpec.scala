@@ -1,9 +1,9 @@
-import model.lines
-import model.lines.Python
+import com.github.theorydudes.model.lines
+import com.github.theorydudes.model.lines.Python
 import org.bitbucket.inkytonik.kiama.parsing.ParseResult
-import util.KivyParser.{File, Path}
+import com.github.theorydudes.util.KivyParser.{File, Path}
 import org.scalatest.FlatSpec
-import util.KivyParser
+import com.github.theorydudes.util.KivyParser
 
 class GuiSpec extends FlatSpec {
   "The AST of gui.kv" should " match the AST of the pretty-printed gui.kv" in {
