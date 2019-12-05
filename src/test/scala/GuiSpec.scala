@@ -33,4 +33,9 @@ class GuiSpec extends FlatSpec {
     )
     assert(modified.exists(Python("['Red','000']")))
   }
+
+  "get(indexOf(elem))" should " yield elem" in {
+    val ret = KivyParser(Path("src/test/scala/gui.kv")).parse
+    assert(ret.get.get(ret.get.indexOf(Python("['Grey','000']"))) equals Python("['Grey','000']"))
+  }
 }

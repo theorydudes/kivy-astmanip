@@ -35,12 +35,11 @@ trait FoldableAST {
   /*def reduceRightOption(f:(ASTNode,ASTNode) => ASTNode):Option[ASTNode] =
     reduceRightToOption(identity)(f)*/
 
-  def get(index:Long) =
-    foldLeft((Option.empty[ASTNode],0)){
-      case ((_,i),a) if i == index => (Some(a),i)
-      case ((_,i),_) => (None,i+1)
-      case _ => (None,0)
-    }._1
+  def get(index:Int): ASTNode =
+    toList(index)
+
+  def indexOf(node:ASTNode):Int =
+    toList.indexOf(node)
 
   def collectFirst[B](pf: PartialFunction[ASTNode,B]):Option[B] =
     foldLeft(Option.empty[B]){
