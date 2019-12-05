@@ -8,8 +8,8 @@ import org.bitbucket.inkytonik.kiama.output.PrettyPrinterTypes.Document
 
 object KivyPrettyPrinter extends PrettyPrinter {
 
-  def format(topLevel: TopLevel) : Document = {
-    super.pretty(show(topLevel))
+  def format[T<:ASTNode](t: T) : Document = {
+    super.pretty(show(t))
   }
 
   def show (astNode:ASTNode) : Doc = astNode match {

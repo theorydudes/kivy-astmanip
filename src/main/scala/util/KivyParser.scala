@@ -1,13 +1,14 @@
 package util
 
-import model.lines.{RootLevelNodes, TopLevel}
+import model.ASTNode
+import model.lines.{Canvas, ClassRule, Comment, Directive, Instruction, Property, Root, RootLevelNodes, Template, TopLevel, Widget}
 import org.bitbucket.inkytonik.kiama.parsing
 import org.bitbucket.inkytonik.kiama.parsing.{NoSuccess, ParseResult}
 import org.bitbucket.inkytonik.kiama.util.{FileSource, Positions, Source, StringSource}
 
 case class KivyParser(source:Source) {
 
-  case class KivyParserResult(parseResult: ParseResult[TopLevel]){
+  case class KivyParserResult[T <: ASTNode ](parseResult: ParseResult[T]){
     def isSuccess: Boolean = parseResult match {
       case parsing.Success(_,_) => true
       case _ => false
@@ -18,7 +19,7 @@ case class KivyParser(source:Source) {
       case _ => true
     }
 
-    def get: TopLevel = parseResult match {
+    def get: T = parseResult match {
       case parsing.Success(result, next) => result
       case success: NoSuccess =>throw new IllegalStateException("No parsing result.")
     }
@@ -32,12 +33,38 @@ case class KivyParser(source:Source) {
     }
   }
 
-  def parse : KivyParserResult = {
-    val positions = new Positions
-    val rules = new Rules(positions)
-    val preProcessor = PreProcessor(source.content)
-    KivyParserResult(rules.parseAll(rules.kv,preProcessor.parserInput))
-  }
+  private lazy val parseInit = (new Rules(new Positions),PreProcessor(source.content))
+
+  def topLevel : KivyParserResult[TopLevel] =
+    KivyParserResult(parseInit._1.parseAll(parseInit._1.kv,parseInit._2.parserInput))
+
+  def comment : KivyParserResult[Comment] =
+    KivyParserResult(parseInit._1.parseAll(parseInit._1.comment,parseInit._2.parserInput))
+
+  def directive : KivyParserResult[Directive] =
+    KivyParserResult(parseInit._1.parseAll(parseInit._1.directive,parseInit._2.parserInput))
+
+  def root : KivyParserResult[Root] =
+    KivyParserResult(parseInit._1.parseAll(parseInit._1.root_rule,parseInit._2.parserInput))
+
+  def classRule : KivyParserResult[ClassRule] =
+    KivyParserResult(parseInit._1.parseAll(parseInit._1.class_rule,parseInit._2.parserInput))
+
+  def template : KivyParserResult[Template] =
+    KivyParserResult(parseInit._1.parseAll(parseInit._1.template_rule,parseInit._2.parserInput))
+
+  def widget : KivyParserResult[Widget] =
+    KivyParserResult(parseInit._1.parseAll(parseInit._1.widget(0),parseInit._2.parserInput))
+
+  def canvas : KivyParserResult[Canvas] =
+    KivyParserResult(parseInit._1.parseAll(parseInit._1.canvas(0),parseInit._2.parserInput))
+
+  def prop : KivyParserResult[Property] =
+    KivyParserResult(parseInit._1.parseAll(parseInit._1.prop(0),parseInit._2.parserInput))
+
+  def instruction : KivyParserResult[Instruction] =
+    KivyParserResult(parseInit._1.parseAll(parseInit._1.instruction(0),parseInit._2.parserInput))
+
 }
 
 object KivyParser {

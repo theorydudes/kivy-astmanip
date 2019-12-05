@@ -29,7 +29,7 @@ class Rules(positions:Positions) extends ListParsers(positions) {
 
   lazy val comment:Parser[Comment] = commenttext <~ "\n" ^^ Comment
 
-  lazy val directive: Parser[Directive] = "#" ~> ":" ~>  """[^\n]+""".r ^^ Directive
+  lazy val directive: Parser[Directive] = "#" ~> ":" ~>  """[^\n]+""".r <~ "\n" ^^ Directive
 
   lazy val root_rule: Parser[Root] = widget(0) ^^ Root
 
@@ -59,9 +59,7 @@ class Rules(positions:Positions) extends ListParsers(positions) {
   )
 
   lazy val widget: IndentationParser[Widget] = indentation =>
-    wname ~ (":".? ~> widget_tail(indentation)) ^^ {
-   case n ~ b => Widget(n,b)
-  }
+    wname ~ (":".? ~> widget_tail(indentation)) ^^ Widget
 
   lazy val widget_tail: IndentationParser[WidgetBody] = indentation => {
     widget_body(indentation)
