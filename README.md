@@ -48,7 +48,7 @@ attribute according to this response in Scala. This is where kivy-astmanip comes
 ```scala
 val serverResponse = "red"
 
-val parser = KivyParser("path/to/file.kv")
+val parser = KivyParser(Path("path/to/file.kv"))
 val parseResult = parser.root
 
 if(parseResult.isSuccess){
