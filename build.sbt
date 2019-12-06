@@ -2,7 +2,7 @@ import sbt.Def
 import sbt.Keys.developers
 
 lazy val bintraySettings = Seq(
-  licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0"))
+  licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0.txt"))
 )
 
 lazy val root = project
@@ -13,7 +13,8 @@ lazy val root = project
     scalaVersion := "2.12.8",
     scalacOptions += "-Ypartial-unification",
     organization := "com.github.theorydudes",
-    version := "0.1.0",
+    startYear := Some(2019),
+    version := "0.2.0",
     libraryDependencies ++=
       Seq (
       "org.bitbucket.inkytonik.kiama" %% "kiama" % "2.2.0",
