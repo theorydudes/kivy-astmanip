@@ -1,6 +1,5 @@
 # kivy-astmanip
 [![Bintray](https://img.shields.io/bintray/v/tizuck/maven/kivy-astmanip)](https://bintray.com/tizuck/maven/kivy-astmanip)
-![LastCommit](https://img.shields.io/github/last-commit/theorydudes/kivy-astmanip)
 
 A parser, AST manipulator and pretty-printer for the language of [Kivy](https://kivy.org) written in Scala.
 
