@@ -16,7 +16,6 @@
 
 package com.github.theorydudes.util
 
-import com.github.theorydudes.model.lines.Widget
 import com.github.theorydudes.model.ASTNode
 import com.github.theorydudes.model.lines._
 import org.bitbucket.inkytonik.kiama.output.PrettyPrinter

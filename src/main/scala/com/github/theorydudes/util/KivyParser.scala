@@ -17,10 +17,11 @@
 package com.github.theorydudes.util
 
 import com.github.theorydudes.model.ASTNode
-import com.github.theorydudes.model.lines.{Canvas, ClassRule, Comment, Directive, Instruction, Property, Root, Template, TopLevel, Widget}
+import com.github.theorydudes.model.lines._
 import org.bitbucket.inkytonik.kiama.parsing
 import org.bitbucket.inkytonik.kiama.parsing.{NoSuccess, ParseResult}
 import org.bitbucket.inkytonik.kiama.util.{FileSource, Positions, Source, StringSource}
+import org.bitbucket.inkytonik.kiama.parsing.Parsers
 
 case class KivyParser(source:Source) {
 
@@ -49,37 +50,33 @@ case class KivyParser(source:Source) {
     }
   }
 
-  private lazy val parseInit = (new Rules(new Positions),PreProcessor(source.content))
+  lazy val parserRules = new Rules(new Positions)
 
-  def topLevel : KivyParserResult[TopLevel] =
-    KivyParserResult(parseInit._1.parseAll(parseInit._1.kv,parseInit._2.parserInput))
+  private def parseWithRule[T <: ASTNode](parser:parserRules.Parser[T]): KivyParserResult[T] = {
+    val preProcessor = new PreProcessor(source.content)
+    val parsedInput = parserRules.parseAll(parser,preProcessor.parserInput)
+    KivyParserResult(parsedInput)
+  }
 
-  def comment : KivyParserResult[Comment] =
-    KivyParserResult(parseInit._1.parseAll(parseInit._1.comment,parseInit._2.parserInput))
+  def topLevel : KivyParserResult[TopLevel] = parseWithRule(parserRules.kv)
 
-  def directive : KivyParserResult[Directive] =
-    KivyParserResult(parseInit._1.parseAll(parseInit._1.directive,parseInit._2.parserInput))
+  def comment : KivyParserResult[Comment] = parseWithRule(parserRules.comment)
 
-  def root : KivyParserResult[Root] =
-    KivyParserResult(parseInit._1.parseAll(parseInit._1.root_rule,parseInit._2.parserInput))
+  def directive : KivyParserResult[Directive] = parseWithRule(parserRules.directive)
 
-  def classRule : KivyParserResult[ClassRule] =
-    KivyParserResult(parseInit._1.parseAll(parseInit._1.class_rule,parseInit._2.parserInput))
+  def root : KivyParserResult[Root] = parseWithRule(parserRules.root)
 
-  def template : KivyParserResult[Template] =
-    KivyParserResult(parseInit._1.parseAll(parseInit._1.template_rule,parseInit._2.parserInput))
+  def classRule : KivyParserResult[ClassRule] = parseWithRule(parserRules.classP)
 
-  def widget : KivyParserResult[Widget] =
-    KivyParserResult(parseInit._1.parseAll(parseInit._1.widget(0),parseInit._2.parserInput))
+  def template : KivyParserResult[Template] = parseWithRule(parserRules.template)
 
-  def canvas : KivyParserResult[Canvas] =
-    KivyParserResult(parseInit._1.parseAll(parseInit._1.canvas(0),parseInit._2.parserInput))
+  def widget : KivyParserResult[Widget] = parseWithRule(parserRules.widget(0))
 
-  def prop : KivyParserResult[Property] =
-    KivyParserResult(parseInit._1.parseAll(parseInit._1.prop(0),parseInit._2.parserInput))
+  def canvas : KivyParserResult[Canvas] = parseWithRule(parserRules.canvas(0))
 
-  def instruction : KivyParserResult[Instruction] =
-    KivyParserResult(parseInit._1.parseAll(parseInit._1.instruction(0),parseInit._2.parserInput))
+  def prop : KivyParserResult[Property] = parseWithRule(parserRules.prop(0))
+
+  def instruction : KivyParserResult[Instruction] = parseWithRule(parserRules.instruction(0))
 
 }
 
