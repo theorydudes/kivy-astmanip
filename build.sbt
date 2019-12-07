@@ -28,3 +28,4 @@ lazy val root = project
   )
 
 resolvers += Resolver.bintrayRepo("danielnaczo","Python3Parser")
+resolvers += "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releases/"
