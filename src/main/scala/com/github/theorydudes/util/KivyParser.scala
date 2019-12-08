@@ -19,7 +19,7 @@ package com.github.theorydudes.util
 import com.github.theorydudes.model.ASTNode
 import com.github.theorydudes.model.lines._
 import org.bitbucket.inkytonik.kiama.parsing
-import org.bitbucket.inkytonik.kiama.parsing.{NoSuccess, ParseResult}
+import org.bitbucket.inkytonik.kiama.parsing._
 import org.bitbucket.inkytonik.kiama.util.{FileSource, Positions, Source, StringSource}
 import org.bitbucket.inkytonik.kiama.parsing.Parsers
 
@@ -53,16 +53,19 @@ case class KivyParser(source:Source) {
   lazy val parserRules = new Rules(new Positions)
 
   private def parseWithRule[T <: ASTNode](parser:parserRules.Parser[T]): KivyParserResult[T] = {
-    val preProcessor = new PreProcessor(source.content)
+    val preProcessor = PreProcessor(source.content)
     val parsedInput = parserRules.parseAll(parser,preProcessor.parserInput)
     KivyParserResult(parsedInput)
   }
 
   def topLevel : KivyParserResult[TopLevel] = parseWithRule(parserRules.kv)
 
+
   def comment : KivyParserResult[Comment] = parseWithRule(parserRules.comment)
 
+
   def directive : KivyParserResult[Directive] = parseWithRule(parserRules.directive)
+
 
   def root : KivyParserResult[Root] = parseWithRule(parserRules.root)
 
