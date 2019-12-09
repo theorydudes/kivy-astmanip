@@ -39,18 +39,6 @@ trait FoldableAST {
       case (None,astNode) => Some(f(astNode))
     }
 
-  /*def reduceRightToOption[B](f:ASTNode => B)(g:(ASTNode,B) => B):Option[B] =
-    foldRight(Option.empty[B]){
-      case(astNode,Some(b)) => Some(g(astNode,b))
-      case (astNode,None) => Some(f(astNode))
-    }*/
-
-  def reduceLeftOption(f:(ASTNode,ASTNode) => ASTNode):Option[ASTNode] =
-    reduceLeftToOption(identity)(f)
-
-  /*def reduceRightOption(f:(ASTNode,ASTNode) => ASTNode):Option[ASTNode] =
-    reduceRightToOption(identity)(f)*/
-
   def get(index:Int): ASTNode =
     toList(index)
 

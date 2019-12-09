@@ -157,9 +157,9 @@ class Rules(positions:Positions) extends ListParsers(positions) {
   lazy val name: Lexer = """[a-z_][A-Za-z_0-9]*""".r
 
   lazy val canvasPre : Parser[CanvasType.canvasType] =
-    "canvas" ^^ (_ => CanvasType.Regular)|
-      "canvas.before" ^^ (_ => CanvasType.Before) |
-      "canvas.after" ^^ (_ => CanvasType.After)
+    "canvas.after" ^^ (_ => CanvasType.After) |
+    "canvas.before" ^^ (_ => CanvasType.Before) |
+    "canvas" ^^ (_ => CanvasType.Regular)
 
   lazy val commenttext : Lexer = "#" ~> """[^\n]+""".r
 }

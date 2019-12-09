@@ -24,6 +24,10 @@ case class PreProcessor(post:String){
 
 object PreProcessor {
   def apply(pre: String): PreProcessor = {
+
+    if(pre equals ""){
+      throw new IllegalArgumentException("Empty file.")
+    }
     /**
      * Replace all occurrences of 4 spaces at the beginning of a line with `\t` and concatenate
      * lines with the `\n` character.
@@ -35,7 +39,7 @@ object PreProcessor {
       case Nil => ""
       case head :: tl =>
         val indexOfFirstNonWhitespace = head.indexWhere(c => """[^\s]""".r.pattern.matcher(c.toString).matches())
-        if(indexOfFirstNonWhitespace != -1) {
+        if(indexOfFirstNonWhitespace > 0) {
           val substitutedWhitespaces = head.substring(0, indexOfFirstNonWhitespace).replaceAll(" {4}", "\t")
           val withoutIndentation = head.substring(indexOfFirstNonWhitespace)
           val withoutIndentationSubstituted = withoutIndentation.replaceAll(" {4}", "\t")
@@ -52,7 +56,6 @@ object PreProcessor {
      * @return kivy-code that does not contain any empty lines.
      */
     def squash(lines:List[String]): String = lines match {
-      case Nil => ""
       case ::(head,Nil) => head
       case ::(head, tl) =>
         val reg = """\s+""".r

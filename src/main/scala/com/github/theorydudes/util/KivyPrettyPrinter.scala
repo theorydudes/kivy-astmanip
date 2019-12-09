@@ -29,11 +29,11 @@ object KivyPrettyPrinter extends PrettyPrinter {
 
   def show (astNode:ASTNode) : Doc = astNode match {
     case TopLevel(rootLevelNodes) => vsep(rootLevelNodes.map(show))
-    case Widget(name, widgetBody) => string(name.toString) <> char(':') <>
+    case Widget(name, widgetBody) => show(name) <> char(':') <>
       nest(line <> vsep(widgetBody.map(show)))
     case s: KivyString => s.toString
-    case ClassList(names) => ssep(names.map(n => string(n.toString)),',')
-    case ClassListBase(names) => ssep(names.map(n => string(n.toString)),'+')
+    case ClassList(names) => ssep(names.map(n => show(n)),',')
+    case ClassListBase(names) => ssep(names.map(n => show(n)),'+')
     case d:Directive => d.toString
     case AutoClass(widgetList, widgetBase) =>  show(widgetList) <> opt(widgetBase.map(n => '@' <> show(n)))
     case Template(classWidget, widgetBody) => '[' <> show(classWidget) <> ']' <> ':' <>
@@ -44,9 +44,9 @@ object KivyPrettyPrinter extends PrettyPrinter {
     case c:Comment => c.toString
     case Canvas(canvasType,canvasBody) => canvasType.toString <> ':' <>
       nest(line <> vsep(canvasBody.map(show)))
-    case Instruction(name,instructionBody) => name.toString <> ':' <>
+    case Instruction(name,instructionBody) => show(name) <> ':' <>
       nest(line <> vsep(instructionBody.map(show)))
-    case Property(name,pythonBody) => name <> ':' <+>
+    case Property(name,pythonBody) => string(name) <> ':' <+>
       notNestedIfPossible(pythonBody.map(p => string(p.toString)))
   }
 
