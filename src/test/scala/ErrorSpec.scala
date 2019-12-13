@@ -11,7 +11,6 @@ class ErrorSpec extends FlatSpec {
     assert(parseResult.isFailure)
     assert(!parseResult.isSuccess)
     assertThrows[IllegalStateException](parseResult.get)
-    assertThrows[IllegalStateException](parseResult.pretty)
   }
 
   "parsing an empty file" should "not pass the preprocessor" in {

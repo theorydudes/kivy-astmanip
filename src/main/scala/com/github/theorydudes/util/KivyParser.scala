@@ -40,14 +40,6 @@ case class KivyParser(source:Source) {
       case parsing.Success(result, _) => result
       case _: NoSuccess =>throw new IllegalStateException("No parsing result.")
     }
-
-    def pretty:String = parseResult match {
-      case parsing.Success(result, _) =>
-        val doc = KivyPrettyPrinter.format(result)
-        doc.layout
-      case parsing.NoSuccess(_,_) =>
-        throw new IllegalStateException("A non successful parsing result may not be pretty printed.")
-    }
   }
 
   lazy val parserRules = new Rules(new Positions)

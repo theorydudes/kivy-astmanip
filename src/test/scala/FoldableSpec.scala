@@ -6,8 +6,8 @@ import org.scalatest.FlatSpec
 
 class FoldableSpec extends FlatSpec {
 
-  val pathToGui = Path("src/test/scala/gui.kv")
-  val pathToCov = Path("src/test/scala/coverage.kv")
+  val pathToGui: Path = Path("src/test/scala/gui.kv")
+  val pathToCov: Path = Path("src/test/scala/coverage.kv")
 
   "The AST of gui.kv" should " contain a Python-Code fragment with content ['Grey','000']" in {
     val ret = KivyParser(pathToGui).topLevel

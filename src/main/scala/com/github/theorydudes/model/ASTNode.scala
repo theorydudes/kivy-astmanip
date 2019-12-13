@@ -16,6 +16,7 @@
 
 package com.github.theorydudes.model
 
+import com.github.theorydudes.util.KivyPrettyPrinter
 import org.bitbucket.inkytonik.kiama.==>
 import org.bitbucket.inkytonik.kiama.rewriting.Rewriter._
 import org.bitbucket.inkytonik.kiama.rewriting.Strategy
@@ -23,4 +24,5 @@ import org.bitbucket.inkytonik.kiama.rewriting.Strategy
 trait ASTNode extends FoldableAST { self =>
   def traverseAndApply(s:Strategy):ASTNode
   def rewrite(fp:ASTNode ==> ASTNode): ASTNode = self.traverseAndApply(rule(fp))
+  def pretty:String = KivyPrettyPrinter.format(self).layout
 }
