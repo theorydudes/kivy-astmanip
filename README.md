@@ -9,7 +9,7 @@ Kivy-astmanip can be directly imported using sbt:
 ```sbt
 resolvers += Resolver.bintrayRepo("tizuck", "maven")
 
-libraryDependencies += "com.github.theorydudes" %% "kivy-astmanip" % "0.2.0"
+libraryDependencies += "com.github.theorydudes" %% "kivy-astmanip" % "1.0.0"
 ```
 ## Kivy
 > Open source Python library for rapid development of applications
@@ -59,7 +59,7 @@ if(parseResult.isSuccess){
         .get
         .rewrite({case Python("['Grey','000']") => Python("['Red','000']")})
   }
-  println(KivyPrettyPrinter.format(manipulatedRoot).layout)
+  println(manipulatedRoot.pretty)
 }
  
 ```
