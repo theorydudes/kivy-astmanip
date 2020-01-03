@@ -17,10 +17,13 @@
 package com.github.theorydudes.util
 
 import com.github.theorydudes.model.ASTNode
-import com.github.theorydudes.model.lines._
+import com.github.theorydudes.model.model._
 import org.bitbucket.inkytonik.kiama.output.PrettyPrinter
 import org.bitbucket.inkytonik.kiama.output.PrettyPrinterTypes.Document
 
+/**
+ * Provides a kiama-based pretty printer for all classes that inherit `ASTNode`
+ */
 object KivyPrettyPrinter extends PrettyPrinter {
 
   def format[T<:ASTNode](t: T) : Document = {

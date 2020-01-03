@@ -17,11 +17,10 @@
 package com.github.theorydudes.util
 
 import com.github.theorydudes.model.ASTNode
-import com.github.theorydudes.model.lines._
+import com.github.theorydudes.model.model._
 import org.bitbucket.inkytonik.kiama.parsing
 import org.bitbucket.inkytonik.kiama.parsing._
 import org.bitbucket.inkytonik.kiama.util.{FileSource, Positions, Source, StringSource}
-import org.bitbucket.inkytonik.kiama.parsing.Parsers
 
 case class KivyParser(source:Source) {
 

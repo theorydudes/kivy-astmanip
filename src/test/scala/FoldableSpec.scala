@@ -1,5 +1,5 @@
-import com.github.theorydudes.model.{ASTNode, lines}
-import com.github.theorydudes.model.lines.{Instruction, Property, Python, WName, Widget}
+import com.github.theorydudes.model.{ASTNode, model}
+import com.github.theorydudes.model.model.{Instruction, Property, Python, WName, Widget}
 import com.github.theorydudes.util.KivyParser
 import com.github.theorydudes.util.KivyParser.Path
 import org.scalatest.FlatSpec
@@ -12,7 +12,7 @@ class FoldableSpec extends FlatSpec {
   "The AST of gui.kv" should " contain a Python-Code fragment with content ['Grey','000']" in {
     val ret = KivyParser(pathToGui).topLevel
     val first = ret.get.collectFirst{
-      case p@lines.Python(pCode) if pCode equals "['Grey','000']" => p
+      case p@model.Python(pCode) if pCode equals "['Grey','000']" => p
     }
     assert(first.isDefined)
     assert(first.get.pCode equals "['Grey','000']")

@@ -18,11 +18,35 @@ package com.github.theorydudes.util
 
 import org.bitbucket.inkytonik.kiama.util.StringSource
 
+/**
+ * Should be instantiated using the `apply`-method in the companion-object
+ * which accepts arbitrarily formatted Kivy-Files and converts them in post
+ * so it can be consumed by [[KivyParser]].
+ *
+ * @param post formatted Kivy-file which can be parsed by [[KivyParser]].
+ */
 case class PreProcessor(post:String){
   val parserInput: StringSource = StringSource(post)
 }
 
 object PreProcessor {
+  /**
+   * Converts arbitrarily formatted Kivy-Files into the format [[KivyParser]] expects stored
+   * in a `PreProcessor` instance.
+   *
+   * Before pre-processing Kivy-files can contain the following formatting properties:
+   *  - mixed indentation symbols tabs and spaces.
+   *  - empty lines.
+   *  - operating system dependent newline characters.
+   *
+   * Applies formatting changes to `pre` in a way that:
+   *   - only tabs are used for indentation.
+   *   - no empty lines exist.
+   *   - `\n` is solely used for newlines.
+   *
+   * @param pre Arbitrarily formatted Kivy-File.
+   * @return `PreProcessor` with the applied changes on `pre` stored in `PreProcessor.post`.
+   */
   def apply(pre: String): PreProcessor = {
 
     if(pre equals ""){

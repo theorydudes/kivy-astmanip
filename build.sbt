@@ -14,7 +14,7 @@ lazy val root = project
     scalacOptions += "-Ypartial-unification",
     organization := "com.github.theorydudes",
     startYear := Some(2019),
-    version := "0.2.0",
+    version := "0.2.1",
     libraryDependencies ++=
       Seq (
       "org.bitbucket.inkytonik.kiama" %% "kiama" % "2.2.0",

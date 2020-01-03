@@ -17,25 +17,56 @@
 package com.github.theorydudes.model
 
 import com.github.python3parser.model.mods.ExpressionMod
+import com.github.python3parser.visitors.prettyprint.{IndentationPrettyPrint, ModulePrettyPrintVisitor}
 import org.bitbucket.inkytonik.kiama.rewriting.Strategy
 import org.bitbucket.inkytonik.{kiama => Kiama}
 
-object lines {
+/**
+ * Container object for all classes that are ASTNodes.
+ */
+object model {
+
+  /**
+   * Superclass for all ASTNodes that can occur in the body of a [[Widget]].
+   */
   trait WidgetBodyElement extends ASTNode {
     override def traverseAndApply(s: Strategy): WidgetBodyElement
   }
+
+  /**
+   * Superclass for all ASTNodes that can occur in the body of a [[Instruction]].
+   */
   trait InstructionBodyElement extends ASTNode {
     override def traverseAndApply(s: Strategy): InstructionBodyElement
   }
+
+  /**
+   * Superclass for all ASTNodes that can occur in the body of a [[Canvas]].
+   */
   trait CanvasBodyElement extends ASTNode {
     override def traverseAndApply(s: Strategy): CanvasBodyElement
   }
+
+  /**
+   * Superclass for all ASTNodes that can occur in the body of a [[Root]].
+   */
   trait RootNodeElement extends ASTNode {
     override def traverseAndApply(s: Strategy): RootNodeElement
   }
 
+  /**
+   *
+   */
   object CanvasType {
+
+    /**
+     * Base Type for canvas types.
+     */
     trait canvasType
+
+    /**
+     *
+     */
     case object Regular extends canvasType {
       override def toString: String = "canvas"
     }
@@ -309,6 +340,14 @@ object lines {
         if(firstIndexWithoutWhiteSpaces != -1) firstIndexWithoutWhiteSpaces else 0,
         if(lastIndexBeforeWhieSpacesBegin != -1) lastIndexBeforeWhieSpacesBegin else pCode.lastIndexOf(pCode.last + 1)
       ))
+    }
+
+    def fromPythonAST(expressionMod: ExpressionMod):Python = {
+      val prettyPrinter = new  ModulePrettyPrintVisitor()
+      Python(
+        prettyPrinter.visitExpressionMod(expressionMod,new IndentationPrettyPrint(0))
+          .replaceAll("\n"," ")
+      )
     }
   }
 }

@@ -1,5 +1,5 @@
-import com.github.theorydudes.model.lines
-import com.github.theorydudes.model.lines.Python
+import com.github.theorydudes.model.model
+import com.github.theorydudes.model.model.Python
 import org.bitbucket.inkytonik.kiama.parsing.ParseResult
 import com.github.theorydudes.util.KivyParser.{File, Path}
 import org.scalatest.FlatSpec

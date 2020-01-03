@@ -16,21 +16,33 @@
 
 package com.github.theorydudes.util
 
-import com.github.theorydudes.model.lines._
+import com.github.theorydudes.model.model._
 import com.github.theorydudes.model.ASTNode
 import org.bitbucket.inkytonik.kiama.parsing.ListParsers
 import org.bitbucket.inkytonik.kiama.util.Positions
 
+/**
+ * Contains all parsing rules to parse Kivy-files.
+ *
+ * Rules are based on [[https://github.com/kived/kvlang/blob/master/g/kv.g]].
+ *
+ * @param positions Kiama specific parameter
+ */
 class Rules(positions:Positions) extends ListParsers(positions) {
   /**
    * Match usual whitespace characters associated with `\s` token described at
    * [[https://docs.oracle.com/javase/7/docs/api/java/com.github.theorydudes.util/regex/Pattern.html]]
    * however tabs and newlines must not be consumed.
    *
-   * @return Parser that matches whitespace characters except `\t` and `\n`
+   * @return Parser that matches whitespace characters except `\t` and `\n`.
    */
   override def whitespace: Parser[Any] = regex("[\\s&&[^\\t\\n]]*".r)
 
+  /**
+   * Parsers that are dependent on an IndentationLevel.
+   *
+   * @tparam T Parser-type.
+   */
   type IndentationParser[T] = Int => Parser[T]
 
   lazy val kv : Parser[TopLevel] = rep1(line) ^^ TopLevel
@@ -136,8 +148,11 @@ class Rules(positions:Positions) extends ListParsers(positions) {
   lazy val propValue:Parser[Python] = {
     """[^\n]+""".r ^^ (s => Python(s))
   }
-  
 
+
+  /**
+   * Symbol parsing
+   */
   type Lexer = Parser[String]
 
   /**
